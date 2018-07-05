@@ -1,31 +1,17 @@
-The input shape files for this analysis are stored in an external repository. On a machine with a kerberos token for CERN access (e.g. lxplus), the simplest, and password-free way to get the repository is:
+# Instructions on how to run 1D limits (05.Jul.2018)
+===============
+These instructions run the observed limit. For the expected, one needs to add -t -1 for every combine command. 
+```
+cd bin
+MorphingSM2017 --output_folder="TestJune26" --postfix="-2D" --control_region=0 --manual_rebin=false --real_data=false --mm_fit=false --ttbar_fit=false
+sh _do_mc_Stat.sh  output/TestJune26
+cd output/TestJune26
+combineTool.py -M T2W -i {cmb,tt}/* -o workspace.root --parallel 18
+cp ../../../scripts/texName.json .
+cp ../../../scripts/plot1DScan.py .
+combine -M MultiDimFit -m 125 --algo grid --points 101 --rMin 0 --rMax 10 cmb/125/workspace.root -n nominal
+combine -M MultiDimFit --algo none --rMin 0 --rMax 10 cmb/125/workspace.root -m 125 -n bestfit --saveWorkspace
+combine -M MultiDimFit --algo grid --points 101 --rMin 0 --rMax 10 -m 125 -n stat higgsCombinebestfit.MultiDimFit.mH125.root --snapshotName MultiDimFit --freezeParameters all --fastScan
+python ./plot1DScan.py --main higgsCombinenominal.MultiDimFit.mH125.root --POI r -o cms_output_freeze_All --others 'higgsCombinestat.MultiDimFit.mH125.root:Freeze all:2' --breakdown syst,stat
+```
 
-    git clone https://:@gitlab.cern.ch:8443/cms-htt/SM-PAS-2016.git shapes
-
-Otherwise normal https access requiring a username and password can be done with:
-
-    git clone https://gitlab.cern.ch/cms-htt/SM-PAS-2016.git shapes
-
-New files as well as updates should be pushed directly to the master branch. To avoid creating unnecessary merge commit, please always do git pull with the --rebase option:
-
-    git pull --rebase
- 
-This will only fall back to a merge when rebasing your local changes is not possible.
-
-
-
-
-
-
-PLOTTING:
-You can find a plotting tool for SM-HTT here scripts/plotter.py.  There is a good deal of parameters such as the number of times a 2D distribution is unrolled and such which are stored in an external varCfg file: scripts/varCfgPlotter.py.  If the binning changes, it will be helpful to updated this file for aesthetics sake.  Other details such as default input files for each channel and which shapes are merged into a single plotted histo are also contained here.
-
-Example usage:
-
-    python scripts/plotter.py --channel em --isLog 0
-
-This can handle prefit and postfit plotting by adjusting the --prefix default
-
-    python scripts/plotter.py --channel em --isLog 0 --prefix prefit_
-
-This will append to each category TDirectory it searches for prefit_, giving prefit_tt_VBF for example.  This does not handle postfit plots for the non-fitted variable currently.
