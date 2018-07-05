@@ -15,4 +15,5 @@ combine -M MultiDimFit --algo none --rMin 0 --rMax 10 cmb/125/workspace.root -m 
 combine -M MultiDimFit --algo grid --points 101 --rMin 0 --rMax 10 -m 125 -n stat higgsCombinebestfit.MultiDimFit.mH125.root --snapshotName MultiDimFit --freezeParameters all --fastScan
 python ./plot1DScan.py --main higgsCombinenominal.MultiDimFit.mH125.root --POI r -o cms_output_freeze_All --others 'higgsCombinestat.MultiDimFit.mH125.root:Freeze all:2' --breakdown syst,stat
 ```
+This produces a few output files, such as cms_output_freeze_All.pdf with the LL plot.
 
